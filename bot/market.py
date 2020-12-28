@@ -7,8 +7,8 @@ class market:
 
 	def connectSql(self):
 		connection = psycopg2.connect(
-			database = 'mydb', user = 'raj',
-			password = 'raj-1',  host = '127.0.0.1',
+			database = 'mydb', user = 'taskmaster',
+			password = 'taskmaster',  host = '127.0.0.1',
 			port = '5432'
 		)
 		return connection
