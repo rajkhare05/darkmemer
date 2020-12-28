@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 # import sys
-# sys.path.append('/darkMemer/cogs/')
+# sys.path.append('/darkmemer/cogs/')
 import darkmemer
 token = '' #bot token
 
@@ -16,14 +16,19 @@ bot = commands.Bot(
 
 @bot.event
 async def on_ready():
-	print('Joke.r10 is online')
+	print('bot is online')
 
 @bot.command(name = 'ping', hidden = True)
 async def send_ping(ctx):
 	'''
 	Sends a ping 
 	'''
-	return await ctx.send('pong {emo_} \n{latency}ms'.format(emo_ = '\N{Table Tennis Paddle and Ball}', latency = str(bot.latency)[2:5]))
+	return await ctx.send(
+		'pong {emo_} \n{latency}ms'.format(
+			emo_ = '\N{Table Tennis Paddle and Ball}',
+			latency = str(bot.latency)[2:5]
+		)
+	)
 
 @bot.command(name = 'shutdown', hidden = True)
 async def turn_off_bot(ctx):
