@@ -40,9 +40,6 @@ async def turn_off_bot(ctx):
 
 extensions = [
 	'cogs.managecogs',
-	'cogs.mail',
-	'cogs.listOfEverything',
-	'cogs.greet',
 	'cogs.dark'
 ]
 
