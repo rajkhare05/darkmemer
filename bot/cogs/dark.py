@@ -35,7 +35,7 @@ class playDarkMemer(commands.Cog):
 	
 	@commands.command(name = 'work')
 	@commands.check(playerExistance)
-	@commands.cooldown(rate = 1, per = 10.0, type = commands.BucketType.member)
+	@commands.cooldown(rate = 1, per = 15.0, type = commands.BucketType.member)
 	async def doSomeWork(self, ctx):
 		'''
 		work to get money
@@ -173,7 +173,7 @@ class playDarkMemer(commands.Cog):
 	async def on_command_error(self, ctx, error):
 		if isinstance(error, commands.CommandOnCooldown):
 			return await ctx.send(embed = discord.Embed(
-				description = '{user}, RUKO JARA SABAR KARO {hand}! \ntry after {n} seconds !'.format(
+				description = '{user}, \nRUKO JARA SABAR KARO {hand}! \ntry after {n} seconds !'.format(
 					user = ctx.author,
 					hand = '\N{raised hand}',
 					n = str(error.retry_after)[:4]
