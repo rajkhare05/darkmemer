@@ -117,7 +117,6 @@ class playDarkMemer(commands.Cog):
 		'''
 		self.dank = darkmemer.life(ctx.author.id, ctx.author.name, ctx.author.nick, ctx.author.discriminator)
 		items = self.dank.person.inventory()
-		print(items)
 		inventory_ = '(Items, Price, Quantity)\n'
 		for item in items:
 			inventory_ += item
@@ -126,7 +125,6 @@ class playDarkMemer(commands.Cog):
 			inventory_ += ' '
 			inventory_ += str(items[item][1])
 			inventory_ += '\n'
-		print(inventory_)
 		embed_ = discord.Embed(
 			title = '{player}\'s Inventory'.format(player = ctx.author.name),
 			description = inventory_,
