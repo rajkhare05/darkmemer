@@ -27,7 +27,20 @@ class memes(commands.Cog):
 		downvotes = html.json()["data"]["children"][node]["data"]["downs"]
 		comments = html.json()["data"]["children"][node]["data"]["num_comments"]
 		return {'title': title, 'image': url, 'upvotes': upvotes, 'downvotes': downvotes, 'comments': comments}
-
+	'''
+	subreddits for memes:-
+		memes = 2-26 0-24 0-24
+		meme = 1-26 0-24 0-24
+		AdviceAnimals = 1-26 0-24 0-24
+		MemeEconomy = 2-26 0-24 0-24
+		ComedyCemetry = 1-26 0-24 0-24
+		dankmemes = 2-26 0-24 0-24
+		PrequelMemes = 2-26 0-24 0-24
+		terriblefacebookmemes = 0-26 0-24 0-24
+		PewdiepieSubmissions = 1-26 0-24 0-24
+		funny = 1-26 0-24 0-24
+		teenagers = 2-26 0-24 0-24
+	'''
 	def list_of_memes(self):
 		html = self.get_reddit_html('memes')
 		for i in range(0, 24):
