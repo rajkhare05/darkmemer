@@ -23,10 +23,11 @@ class memes(commands.Cog):
 	def get_meme(self, node, html):
 		title = html.json()["data"]["children"][node]["data"]["title"]
 		url = html.json()["data"]["children"][node]["data"]["url"]
+		source = 'https://www.reddit.com' + html.json()["data"]["children"][node]["data"]["permalink"]
 		upvotes = html.json()["data"]["children"][node]["data"]["ups"]
 		downvotes = html.json()["data"]["children"][node]["data"]["downs"]
 		comments = html.json()["data"]["children"][node]["data"]["num_comments"]
-		return {'title': title, 'image': url, 'upvotes': upvotes, 'downvotes': downvotes, 'comments': comments}
+		return {'title': title, 'image': url, 'upvotes': upvotes, 'downvotes': downvotes, 'comments': comments, 'source': source}
 	'''
 	subreddits for memes:-
 		memes = 2-26 0-24 0-24
@@ -63,11 +64,11 @@ class memes(commands.Cog):
 			self.jump += 1
 		else:
 			self.jump = 0
-		print(self.jump)
+		#print(self.jump)
 		embed_ = discord.Embed(
 			title = self.listOfMemes[self.jump]['title'],
 			colour = discord.Colour.red(),
-			url = self.listOfMemes[self.jump]['image']
+			url = self.listOfMemes[self.jump]['source']
 		)
 		embed_.set_image(url = self.listOfMemes[self.jump]['image'])
 		embed_.set_footer(
@@ -75,8 +76,7 @@ class memes(commands.Cog):
 					+'\N{THUMBS DOWN SIGN}' + str(self.listOfMemes[self.jump]['downvotes']) + '  '
 					+'\N{SPEECH BALLOON}' + str(self.listOfMemes[self.jump]['comments'])
 		)
-		await ctx.send(embed = embed_)
-		return
+		return await ctx.send(embed = embed_)
 
 def setup(bot):
 	bot.add_cog(memes(bot))
