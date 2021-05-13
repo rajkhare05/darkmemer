@@ -1,6 +1,5 @@
 from players import playerData
 from market import market
-from players import playerData
 
 class life:
 	def __init__(self, pid, name, nick, pdsc):
@@ -35,7 +34,6 @@ class life:
 			return self.bank
 		
 		def spend(self, amount):
-			res = False
 			if self.wallet >= amount:
 				self.wallet -= amount
 				self.player_.updatePlayerData(
@@ -45,8 +43,8 @@ class life:
 					name = self.name,
 					pdsc = self.pdsc
 				)
-				res = True
-			return res
+				return True
+			return False
 		
 		def addMoney(self, amount):
 			self.wallet += amount
@@ -70,7 +68,6 @@ class life:
 			return {}
 
 		def withdraw(self, amount: int):
-			res = False
 			if self.bank >= amount:
 				self.bank -= amount
 				self.wallet += amount
@@ -88,11 +85,10 @@ class life:
 					name = self.name,
 					pdsc = self.pdsc
 				)
-				res = True
-			return res
+				return True
+			return False
 		
 		def deposit(self, amount: int):
-			res = False
 			if self.wallet >= amount:
 				self.bank += amount
 				self.wallet -= amount
@@ -110,8 +106,8 @@ class life:
 					name = self.name,
 					pdsc = self.pdsc
 				)
-				res = True
-			return res
+				return True
+			return False
 		
 		def buyItem(self, name: str, quantity: int):
 			#market : id, name, price, quantity
