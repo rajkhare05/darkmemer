@@ -27,7 +27,7 @@ async def send_ping(ctx):
 		)
 	)
 
-@bot.command(name = 'shutdown', aliases = ['shut', 'close'], hidden = True)
+@bot.command(name = 'shutdown', hidden = True)
 async def turn_off_bot(ctx):
 	'''
 	Shutdown the bot
