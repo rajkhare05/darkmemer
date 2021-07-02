@@ -1,7 +1,7 @@
 # DarkMemer
 
 Discord DankMemer clone <br />
-Python version : **3.8.6** <br />
+Python version : **3.8.6 or above** <br />
 
 ### Dependencies
 
