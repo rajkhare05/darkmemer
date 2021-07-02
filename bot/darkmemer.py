@@ -3,11 +3,11 @@ from market import market
 from players import playerData
 
 class life:
-	def __init__(self, pid, name, nick, pdsc):
-		self.person = self.person(pid, name, nick, pdsc, market = market())
+	def __init__(self, pid, name, pdsc, nick = None):
+		self.person = self.person(pid, name, pdsc, nick = None, market = market())
 
 	class person:
-		def __init__(self, pid, name, nick, pdsc, market):
+		def __init__(self, pid, name, pdsc, nick, market):
 			self.__shop = market
 			self.player_ = playerData()
 			self.pid = pid
@@ -19,7 +19,7 @@ class life:
 			self.userItems = self.inventory() # dict[name] = [price,quantity,id] 
 		
 		def profile(self):
-			profile_ = self.player_.playerProfile(self.pid, self.name, self.pdsc)
+			profile_ = self.player_.playerProfile(pid = self.pid, name = self.name, pdsc = self.pdsc)
 			return 'Name : ' + str(profile_[1]) + '\nWallet : Rs.' + str(profile_[5]) + '\nBank : Rs.' + str(profile_[4])
 		
 		def setNick(self, newNick):
@@ -35,7 +35,6 @@ class life:
 			return self.bank
 		
 		def spend(self, amount):
-			res = False
 			if self.wallet >= amount:
 				self.wallet -= amount
 				self.player_.updatePlayerData(
@@ -45,10 +44,13 @@ class life:
 					name = self.name,
 					pdsc = self.pdsc
 				)
-				res = True
-			return res
+				return True
+			return False
 		
 		def addMoney(self, amount):
+			'''
+			add money to wallet on work or winning games
+			'''
 			self.wallet += amount
 			self.player_.updatePlayerData(
 				pid = self.pid,
@@ -70,7 +72,6 @@ class life:
 			return {}
 
 		def withdraw(self, amount: int):
-			res = False
 			if self.bank >= amount:
 				self.bank -= amount
 				self.wallet += amount
@@ -88,11 +89,10 @@ class life:
 					name = self.name,
 					pdsc = self.pdsc
 				)
-				res = True
-			return res
+				return True
+			return False
 		
 		def deposit(self, amount: int):
-			res = False
 			if self.wallet >= amount:
 				self.bank += amount
 				self.wallet -= amount
@@ -110,8 +110,8 @@ class life:
 					name = self.name,
 					pdsc = self.pdsc
 				)
-				res = True
-			return res
+				return True
+			return False
 		
 		def buyItem(self, name: str, quantity: int):
 			#market : id, name, price, quantity
@@ -155,20 +155,3 @@ class life:
 							)
 							res = True			
 			return res
-'''
-	class pet:
-		def __init__(self, name):
-			self.name = name
-		
-		def petProfile(self):
-			pass
-
-		def details(self):
-			pass
-
-		def feed(self, money):
-			return 'you fed the pet'
-		
-		def pat(self):
-			return 'you patted pet'
-'''

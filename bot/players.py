@@ -1,4 +1,3 @@
-#!/usr/local/bin/python3.8
 import psycopg2
 
 class playerData:
@@ -7,70 +6,67 @@ class playerData:
 
 	def connectSql(self):
 		connection = psycopg2.connect(
-			database = 'mydb', user = 'taskmaster',
-			password = 'taskmaster',  host = '127.0.0.1',
+			database = 'darkmemer', user = 'postgres',
+			password = 'raj-1',  host = '127.0.0.1',
 			port = '5432'
 		)
 		return connection
 
-	def playerExist(self, pid, name, pdsc, nick = None):
-		res = False
+	def playerExist(self, pid):
 		conn = self.connectSql()
 		if conn:
 			cur = conn.cursor()
-			sql = """SELECT PID, NAME, NICK, PDSC FROM PLAYERS;"""
+			sql = """SELECT PID FROM PLAYERS;"""
 			cur.execute(sql)
-			rows = cur.fetchall()
-			for row in rows:
-				if row[0] == pid or (row[1] == name or row[2] == nick or row[3] == pdsc):
-					res = True
-					break
-		return res
+			pids = cur.fetchall()
+			for pid_ in pids:
+				if pid_[0] == pid:
+					cur.close()
+					conn.close()
+					return True
+		return False
 
-	def addNewPlayer(self, pid: int, name: str, pdsc: int, nick = None):
-		res = False
-		pExist = self.playerExist(pid, name, pdsc, nick)
-		if pExist == False:
+	def addNewPlayer(self, pid, name, pdsc, nick = None):
+		pExist = self.playerExist(pid)
+		if not pExist:
 			conn = self.connectSql()
 			if conn:
 				cur = conn.cursor()
-				sql = """INSERT INTO PLAYERS (PID, NAME, NICK, PDSC, BANK, WALLET) VALUES (%s, %s, %s, %s, 200, 100);"""
-				cur.executemany(sql, [(pid, name, nick, pdsc)])
+				sql = """INSERT INTO PLAYERS (PID, NAME, PDSC, NICK, BANK, WALLET) VALUES (%s, %s, %s, %s, 200, 100);"""
+				cur.executemany(sql, [(pid, name, pdsc, nick)])
 				conn.commit()
-				res = True
-			cur.close()
-			conn.close()
-		return res
+				cur.close()
+				conn.close()
+				return True
+		return False
 	
 	def playerProfile(self, pid, name, pdsc):
+		player_data = [(0, 'name', 0, None, 0, 0)]
 		conn = self.connectSql()
 		if conn:
 			cur = conn.cursor()
-			sql = """SELECT * FROM PLAYERS WHERE PID = {pid} AND (NAME = '{name}' OR PDSC = {pdsc});""".format(
+			sql = """SELECT * FROM PLAYERS WHERE PID = {pid} AND NAME = '{name}' AND PDSC = {pdsc};""".format(
 				pid = pid,
 				name = name,
 				pdsc = pdsc
 			)
 			cur.execute(sql)
-			list_rows = cur.fetchall()
-			for pdata in list_rows:
-				pass
+			player_data = cur.fetchall()
 			cur.close()
 			conn.close()
-		return pdata #returns a list of player data (1, 4, 5, 6) = (Name, bank, wallet, inventory)
+		return player_data[0] #returns a list of player data (1, 4, 5, 6) = (Name, bank, wallet, inventory)
 	
 	def updatePlayerData(self, pid, column, upadteValue, name, pdsc):
-		res = False
 		conn = self.connectSql()
 		if conn:
 			cur = conn.cursor()
 			sql = """UPDATE PLAYERS SET {column} = %s WHERE PID = %s AND (NAME = '{pname}' OR PDSC = %s);""".format(column = column, pname = name)
 			cur.executemany(sql, [(upadteValue, pid, pdsc)])
 			conn.commit()
-			res = True
-		cur.close()
-		conn.close()
-		return res
+			cur.close()
+			conn.close()
+			return True
+		return False
 
 	def addItemsTOInventory(self, itemName, itemList, pid, name, pdsc):
 		res = False

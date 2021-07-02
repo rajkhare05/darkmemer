@@ -1,8 +1,5 @@
 import discord
 from discord.ext import commands
-# import sys
-# sys.path.append('/darkmemer/cogs/')
-import darkmemer
 token = '' #bot token
 
 intents = discord.Intents.all()
@@ -12,11 +9,11 @@ bot = commands.Bot(
 	command_prefix = '$',
 	case_insensitive = True,
 	intents = intents
-	)
+)
 
 @bot.event
 async def on_ready():
-	print('bot is online')
+	print('online')
 
 @bot.command(name = 'ping', hidden = True)
 async def send_ping(ctx):
@@ -30,13 +27,13 @@ async def send_ping(ctx):
 		)
 	)
 
-@bot.command(name = 'shutdown', hidden = True)
+@bot.command(name = 'shutdown', aliases = ['shut', 'close'], hidden = True)
 async def turn_off_bot(ctx):
 	'''
 	Shutdown the bot
 	'''
 	await ctx.send('Going offline in a minute \nSee ya !')
-	return await bot.logout()
+	return await bot.close()
 
 extensions = [
 	'cogs.managecogs',

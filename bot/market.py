@@ -1,4 +1,3 @@
-#!/usr/local/bin/python3.8
 import psycopg2
 
 class market:
@@ -7,8 +6,8 @@ class market:
 
 	def connectSql(self):
 		connection = psycopg2.connect(
-			database = 'mydb', user = 'taskmaster',
-			password = 'taskmaster',  host = '127.0.0.1',
+			database = 'darkmemer', user = 'postgres',
+			password = 'raj-1',  host = '127.0.0.1',
 			port = '5432'
 		)
 		return connection
