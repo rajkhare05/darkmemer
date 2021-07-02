@@ -1,6 +1,5 @@
 from players import playerData
 from market import market
-from players import playerData
 
 class life:
 	def __init__(self, pid, name, pdsc, nick = None):
