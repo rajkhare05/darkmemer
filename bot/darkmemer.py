@@ -10,7 +10,7 @@ class player:
 		self.pdsc = pdsc
 		self.wallet = self.player_.playerProfile(self.pid)[5]
 		self.bank = self.player_.playerProfile(self.pid)[4]
-		self.userItems = self.inventory() # dict[name] = [price,quantity,id] 
+		self.userItems = self.inventory() # dict[name] = [id, price,quantity]
 	
 	def profile(self):
 		profile_ = self.player_.playerProfile(self.pid)
@@ -54,7 +54,7 @@ class player:
 		if not itemsOwned is None:
 			raw_items = {}
 			for item in itemsOwned:
-				raw_items[item[0]] = [item[1], item[2], item[3]]
+				raw_items[item[1]] = [item[0], item[2], item[3]]
 			return raw_items
 		return {}
 
@@ -94,37 +94,42 @@ class player:
 	
 	def buyItem(self, name: str, quantity: int):
 		#market : id, name, price, quantity
-		#items : name, price, quantity, id
+		#useriItems[name] : id, price, quantity
 		res = False
 		globalItems = self.__shop.marketItems()
+
 		for singleItemList in globalItems:
+
 			if name in singleItemList:
+
 				if self.wallet >= quantity * singleItemList[2] and quantity <= singleItemList[3]:
+
 					if self.userItems == {} or not name in [*self.userItems]:
 						self.spend(quantity * singleItemList[2])
-						self.userItems[name] = [int(singleItemList[2] * quantity), int(quantity), int(singleItemList[0])]
+						self.userItems[name] = [int(singleItemList[0]), int(singleItemList[2] * quantity), int(quantity)]
 						self.player_.addItemsToInventory(
 							itemName = name,
 							itemList = self.userItems,
 							pid = self.pid
 						)
 						self.__shop.updateItem(
-							id = self.userItems[name][2],
+							id = self.userItems[name][0],
 							column = 'quantity',
 							updateValue = singleItemList[3] - quantity
 						)
 						res = True
+
 					else:
 						self.spend(quantity * singleItemList[2])
-						self.userItems[name][0] = int(self.userItems[name][0]) + int(singleItemList[2] * quantity)
-						self.userItems[name][1] = int(self.userItems[name][1]) + quantity
+						self.userItems[name][1] = int(self.userItems[name][1]) + int(singleItemList[2] * quantity)
+						self.userItems[name][2] = int(self.userItems[name][2]) + quantity
 						self.player_.addItemsToInventory(
 							itemName = name,
 							itemList = self.userItems,
 							pid = self.pid
 						)
 						self.__shop.updateItem(
-							id = self.userItems[name][2],
+							id = self.userItems[name][0],
 							column = 'quantity',
 							updateValue = singleItemList[3] - quantity
 						)

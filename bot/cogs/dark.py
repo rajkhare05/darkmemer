@@ -21,7 +21,7 @@ class playDarkMemer(commands.Cog):
 		'''
 		makeplayer = playerData()
 		addPlayer = makeplayer.addNewPlayer(
-			ctx.author.id, ctx.author.name
+			ctx.author.id, ctx.author.name, ctx.author.discriminator
 		)
 		if addPlayer:
 			return await ctx.send('{p}, you started game !'.format(p = ctx.author.mention))
@@ -35,10 +35,10 @@ class playDarkMemer(commands.Cog):
 		work to get money
 		'''
 		player = darkmemer.player(ctx.author.id, ctx.author.name, ctx.author.discriminator)
-		amount = random.randint(150, 1100)
+		amount = random.randint(150, 800)
 		worked = player.addMoney(amount)
 		embed_ = discord.Embed(
-			description = '{player_}, you worked !'.format(player_ = ctx.author),
+			description = '**{player_}**, you worked !\n**{amount_}** coins added to wallet'.format(player_ = ctx.author, amount_ = amount),
 			colour = discord.Colour.red()
 		)
 		if worked:
@@ -115,9 +115,9 @@ class playDarkMemer(commands.Cog):
 		for item in items:
 			inventory_ += item
 			inventory_ += ' '
-			inventory_ += str(items[item][0])
-			inventory_ += ' '
 			inventory_ += str(items[item][1])
+			inventory_ += ' '
+			inventory_ += str(items[item][2])
 			inventory_ += '\n'
 		embed_ = discord.Embed(
 			title = '{player}\'s Inventory'.format(player = ctx.author.name),

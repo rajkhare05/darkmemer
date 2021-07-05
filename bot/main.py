@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-token = '' #bot token
+token = 'NzgyODczOTEyOTg3NDg0MTkx.X8SiJQ.79pBrq3YaSagXDmWe8gLUar4UDY' #bot token
 
 intents = discord.Intents.all()
 permissions_ = discord.Permissions.all()

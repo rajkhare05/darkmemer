@@ -69,9 +69,9 @@ class playerData:
 		if conn:
 			itemExist = False
 			item_ = None
-			inventory_ = self.playerProfile(pid)
-			if not inventory_[6] is None:
-				itemNames = [item for item in (ls[0] for ls in inventory_[6])] if len(inventory_[6]) != 4 else inventory_[6][0]
+			inventory_ = self.playerProfile(pid)[6]
+			if not inventory_ is None:
+				itemNames = [item for item in (ls[1] for ls in inventory_)] if len(inventory_) != 4 else inventory_[1]
 				if itemName in itemNames:
 					itemExist = True
 					item_ = itemNames.index(itemName) + 1
@@ -80,27 +80,26 @@ class playerData:
 			else:
 				item_ = 1
 			cur = conn.cursor()
-			if inventory_[6] is None:
+			if inventory_ is None:
 				sql = """
-				UPDATE PLAYERS SET INVENTORY = ARRAY[['{name_}', '%s', '%s', '%s']] WHERE PID = %s;
+				UPDATE PLAYERS SET INVENTORY = ARRAY[['%s', '{name_}', '%s', '%s']] WHERE PID = %s;
 				""".format(name_ = itemName)
-				#name, price, quantity, id
+				#userItems[name] = [id, price, quantity]
 				cur.executemany(sql, [(itemList[itemName][0], itemList[itemName][1], itemList[itemName][2], pid)])
 				conn.commit()
 
-			elif not itemExist and not inventory_[6] is None:
+			elif not itemExist and not inventory_ is None:
 				sql = """
-				UPDATE PLAYERS SET INVENTORY = INVENTORY || ARRAY['{name_}', '%s', '%s', '%s'] WHERE PID = %s;
+				UPDATE PLAYERS SET INVENTORY = INVENTORY || ARRAY['%s', '{name_}', '%s', '%s'] WHERE PID = %s;
 				""".format(name_ = itemName)
-				#name, price, quantity, id
 				cur.executemany(sql, [(itemList[itemName][0], itemList[itemName][1], itemList[itemName][2], pid)])
 				conn.commit()
 
 			elif itemExist:
 				sql = """
-				UPDATE PLAYERS SET INVENTORY[{item}][2] = %s, INVENTORY[{item}][3] = %s, INVENTORY[{item}][4] = %s WHERE PID = %s;
+				UPDATE PLAYERS SET INVENTORY[{item}][3] = %s, INVENTORY[{item}][4] = %s WHERE PID = %s;
 				""".format(item = item_)
-				cur.executemany(sql, [(itemList[itemName][0], itemList[itemName][1], itemList[itemName][2], pid)])
+				cur.executemany(sql, [(itemList[itemName][1], itemList[itemName][2], pid)])
 				conn.commit()
 			cur.close()
 			conn.close()
