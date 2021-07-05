@@ -1,14 +1,13 @@
 import discord
 from discord.ext import commands
 import darkmemer
-from players import playerData
+from playerData import playerData
 from market import market
 import random
 
 class playDarkMemer(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
-		self.dank = None
 
 	def playerExistance(self):
 		async def predicate(ctx):
@@ -22,8 +21,7 @@ class playDarkMemer(commands.Cog):
 		'''
 		makeplayer = playerData()
 		addPlayer = makeplayer.addNewPlayer(
-			ctx.author.id, ctx.author.name,
-			ctx.author.discriminator, ctx.author.nick
+			ctx.author.id, ctx.author.name
 		)
 		if addPlayer:
 			return await ctx.send('{p}, you started game !'.format(p = ctx.author.mention))
@@ -36,9 +34,9 @@ class playDarkMemer(commands.Cog):
 		'''
 		work to get money
 		'''
-		self.dank = darkmemer.life(ctx.author.id, ctx.author.name, ctx.author.discriminator, ctx.author.nick)
+		player = darkmemer.player(ctx.author.id, ctx.author.name, ctx.author.discriminator)
 		amount = random.randint(150, 1100)
-		worked = self.dank.person.addMoney(amount)
+		worked = player.addMoney(amount)
 		embed_ = discord.Embed(
 			description = '{player_}, you worked !'.format(player_ = ctx.author),
 			colour = discord.Colour.red()
@@ -53,10 +51,10 @@ class playDarkMemer(commands.Cog):
 		'''
 		returns the player profile
 		'''
-		self.dank = darkmemer.life(ctx.author.id, ctx.author.name, ctx.author.discriminator, ctx.author.nick)
+		player = darkmemer.player(ctx.author.id, ctx.author.name, ctx.author.discriminator)
 		embed1 = discord.Embed(
 			title = 'Profile',
-			description = self.dank.person.profile(),
+			description = player.profile(),
 			colour = discord.Colour.blue()
 		)
 		embed1.set_thumbnail(url = ctx.author.avatar_url)
@@ -68,8 +66,8 @@ class playDarkMemer(commands.Cog):
 		'''
 		withdraw money
 		'''
-		self.dank = darkmemer.life(ctx.author.id, ctx.author.name, ctx.author.discriminator, ctx.author.nick)
-		withdrawn = self.dank.person.withdraw(money)
+		player = darkmemer.player(ctx.author.id, ctx.author.name, ctx.author.discriminator)
+		withdrawn = player.withdraw(money)
 		if withdrawn:
 			return await ctx.send('**{amount}** coins withdrawn !'.format(amount = str(money)))
 		return await ctx.send('Not enough money !')
@@ -80,8 +78,8 @@ class playDarkMemer(commands.Cog):
 		'''
 		deposit money
 		'''
-		self.dank = darkmemer.life(ctx.author.id, ctx.author.name, ctx.author.discriminator, ctx.author.nick)
-		deposited = self.dank.person.deposit(money)
+		player = darkmemer.player(ctx.author.id, ctx.author.name, ctx.author.discriminator)
+		deposited = player.deposit(money)
 		if deposited:
 			return await ctx.send('**{amount}** coins deposited!'.format(amount = str(money)))
 		return await ctx.send('Not enough money !')
@@ -92,17 +90,17 @@ class playDarkMemer(commands.Cog):
 		'''
 		returns the balance of player
 		'''
-		self.dank = darkmemer.life(ctx.author.id, ctx.author.name, ctx.author.discriminator, ctx.author.nick)
+		player = darkmemer.player(ctx.author.id, ctx.author.name, ctx.author.discriminator)
 		embed_ = discord.Embed(
 			title = '{player}\'s Balance'.format(player = ctx.author.name),
 			description = 'Total : {total} \nWallet : Rs.{wallet} \nBank : Rs.{bank}'.format(
-				total = str(self.dank.person.netBalance()),
-				wallet = str(self.dank.person.playerWallet()),
-				bank = str(self.dank.person.playerBank())
+				total = str(player.netBalance()),
+				wallet = str(player.playerWallet()),
+				bank = str(player.playerBank())
 			),
 			colour = discord.Colour.dark_green()
 		)
-		if self.dank:
+		if player:
 			return await ctx.send(embed = embed_)
 	
 	@commands.command(name = 'inventory', aliases = ['inv'])
@@ -111,8 +109,8 @@ class playDarkMemer(commands.Cog):
 		'''
 		returns the inventory of player
 		'''
-		self.dank = darkmemer.life(ctx.author.id, ctx.author.name, ctx.author.discriminator, ctx.author.nick)
-		items = self.dank.person.inventory()
+		player = darkmemer.player(ctx.author.id, ctx.author.name, ctx.author.discriminator)
+		items = player.inventory()
 		inventory_ = '(Items, Price, Quantity)\n'
 		for item in items:
 			inventory_ += item
@@ -127,7 +125,7 @@ class playDarkMemer(commands.Cog):
 			colour = discord.Colour.teal()
 		)
 		embed_.set_thumbnail(url = ctx.author.avatar_url)
-		if self.dank:
+		if player:
 			return await ctx.send(embed = embed_)
 	
 	@commands.command(name = 'market')
@@ -157,8 +155,8 @@ class playDarkMemer(commands.Cog):
 		'''
 		buy items
 		'''
-		self.dank = darkmemer.life(ctx.author.id, ctx.author.name, ctx.author.discriminator, ctx.author.nick)
-		buy = self.dank.person.buyItem(itemName, quantity)
+		player = darkmemer.player(ctx.author.id, ctx.author.name, ctx.author.discriminator)
+		buy = player.buyItem(itemName, quantity)
 		if buy:
 			return await ctx.send('{player}, you bought this item !'.format(player = ctx.author.name))
 		return await ctx.send('{player}, either you have low balance or item is not in stock !'.format(player = ctx.author.name))

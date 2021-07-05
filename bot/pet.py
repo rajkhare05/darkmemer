@@ -1,15 +1,15 @@
 import discord
 import random
-from darkmemer import life
-from players import playerData
+from darkmemer import player
+from playerData import playerData
 
 class pet:
 
-    def __init__(self, pid, name, pdsc, nick = None):
+    def __init__(self, pid, name, pdsc):
         self.playerName = name
-        self.player = life(pid, name, nick, pdsc)
-        self.profile = bring_player.person.profile()
-        self.wallet = bring_player.person.playerWallet()
+        self.player = player(pid, name, pdsc)
+        self.profile = self.player.profile()
+        self.wallet = self.player.playerWallet()
         self.hasPet = True if profile[7] else False
         
     def petProfile(self, playerImageUrl):
@@ -27,28 +27,25 @@ class pet:
         return embed_
     
     def namePet(self, newName):
-        res = False
         if self.hasPet:
             self.petProfile()[0] = newName
-            res = True
-        return res
+            return True
+        return False
     
     def feedThePet(self):
-        res = False
         if self.wallet > 0:
-            self.player.person.spend(random.randint(10, 200))
-            return res
-        return res
+            self.player.spend(random.randint(10, 200))
+            return True
+        return False
     
     def patPet(self):
         return True
     
     def cleanPet(self):
-        res = False
         if self.wallet > 0:
-            self.player.person.spend(random.randint(30, 200))
-            return res
-        return res
+            self.player.spend(random.randint(30, 200))
+            return True
+        return False
     
     def playWithPet(self):
         return True

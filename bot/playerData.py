@@ -26,55 +26,50 @@ class playerData:
 					return True
 		return False
 
-	def addNewPlayer(self, pid, name, pdsc, nick = None):
+	def addNewPlayer(self, pid, name, pdsc):
 		pExist = self.playerExist(pid)
 		if not pExist:
 			conn = self.connectSql()
 			if conn:
 				cur = conn.cursor()
-				sql = """INSERT INTO PLAYERS (PID, NAME, PDSC, NICK, BANK, WALLET) VALUES (%s, %s, %s, %s, 200, 100);"""
-				cur.executemany(sql, [(pid, name, pdsc, nick)])
+				sql = """INSERT INTO PLAYERS (PID, NAME, PDSC, BANK, WALLET) VALUES (%s, %s, %s, 200, 100);"""
+				cur.executemany(sql, [(pid, name, pdsc)])
 				conn.commit()
 				cur.close()
 				conn.close()
 				return True
 		return False
 	
-	def playerProfile(self, pid, name, pdsc):
-		player_data = [(0, 'name', 0, None, 0, 0)]
+	def playerProfile(self, pid):
 		conn = self.connectSql()
 		if conn:
 			cur = conn.cursor()
-			sql = """SELECT * FROM PLAYERS WHERE PID = {pid} AND NAME = '{name}' AND PDSC = {pdsc};""".format(
-				pid = pid,
-				name = name,
-				pdsc = pdsc
-			)
+			sql = """SELECT * FROM PLAYERS WHERE PID = {pid};""".format(pid = pid)
 			cur.execute(sql)
 			player_data = cur.fetchall()
 			cur.close()
 			conn.close()
 		return player_data[0] #returns a list of player data (1, 4, 5, 6) = (Name, bank, wallet, inventory)
 	
-	def updatePlayerData(self, pid, column, upadteValue, name, pdsc):
+	def updatePlayerData(self, pid, column, upadteValue):
 		conn = self.connectSql()
 		if conn:
 			cur = conn.cursor()
-			sql = """UPDATE PLAYERS SET {column} = %s WHERE PID = %s AND (NAME = '{pname}' OR PDSC = %s);""".format(column = column, pname = name)
-			cur.executemany(sql, [(upadteValue, pid, pdsc)])
+			sql = """UPDATE PLAYERS SET {column} = %s WHERE PID = %s;""".format(column = column)
+			cur.executemany(sql, [(upadteValue, pid)])
 			conn.commit()
 			cur.close()
 			conn.close()
 			return True
 		return False
 
-	def addItemsTOInventory(self, itemName, itemList, pid, name, pdsc):
+	def addItemsToInventory(self, itemName, itemList, pid):
 		res = False
 		conn = self.connectSql()
 		if conn:
 			itemExist = False
 			item_ = None
-			inventory_ = self.playerProfile(pid, name, pdsc)
+			inventory_ = self.playerProfile(pid)
 			if not inventory_[6] is None:
 				itemNames = [item for item in (ls[0] for ls in inventory_[6])] if len(inventory_[6]) != 4 else inventory_[6][0]
 				if itemName in itemNames:
@@ -87,25 +82,25 @@ class playerData:
 			cur = conn.cursor()
 			if inventory_[6] is None:
 				sql = """
-				UPDATE PLAYERS SET INVENTORY = ARRAY[['{name_}', '%s', '%s', '%s']] WHERE PID = %s AND (NAME = %s OR PDSC = %s);
+				UPDATE PLAYERS SET INVENTORY = ARRAY[['{name_}', '%s', '%s', '%s']] WHERE PID = %s;
 				""".format(name_ = itemName)
 				#name, price, quantity, id
-				cur.executemany(sql, [(itemList[itemName][0], itemList[itemName][1], itemList[itemName][2], pid, name, pdsc)])
+				cur.executemany(sql, [(itemList[itemName][0], itemList[itemName][1], itemList[itemName][2], pid)])
 				conn.commit()
 
 			elif not itemExist and not inventory_[6] is None:
 				sql = """
-				UPDATE PLAYERS SET INVENTORY = INVENTORY || ARRAY['{name_}', '%s', '%s', '%s'] WHERE PID = %s AND (NAME = %s OR PDSC = %s);
+				UPDATE PLAYERS SET INVENTORY = INVENTORY || ARRAY['{name_}', '%s', '%s', '%s'] WHERE PID = %s;
 				""".format(name_ = itemName)
 				#name, price, quantity, id
-				cur.executemany(sql, [(itemList[itemName][0], itemList[itemName][1], itemList[itemName][2], pid, name, pdsc)])
+				cur.executemany(sql, [(itemList[itemName][0], itemList[itemName][1], itemList[itemName][2], pid)])
 				conn.commit()
 
 			elif itemExist:
 				sql = """
-				UPDATE PLAYERS SET INVENTORY[{item}][2] = %s, INVENTORY[{item}][3] = %s, INVENTORY[{item}][4] = %s WHERE PID = %s AND (NAME = %s OR PDSC = %s);
+				UPDATE PLAYERS SET INVENTORY[{item}][2] = %s, INVENTORY[{item}][3] = %s, INVENTORY[{item}][4] = %s WHERE PID = %s;
 				""".format(item = item_)
-				cur.executemany(sql, [(itemList[itemName][0], itemList[itemName][1], itemList[itemName][2], pid, name, pdsc)])
+				cur.executemany(sql, [(itemList[itemName][0], itemList[itemName][1], itemList[itemName][2], pid)])
 				conn.commit()
 			cur.close()
 			conn.close()
