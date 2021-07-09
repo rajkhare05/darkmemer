@@ -1,13 +1,13 @@
 # DarkMemer
 
-Discord DankMemer clone <br />
+DarkMemer, a wholesome bot for your discord server <br />
 Python version : **3.8.6 or above** <br />
 
-### Dependencies
+### Requirements
 
-discord.py[voice] <br />
-datetime <br />
-PyNaCl <br />
-pytz <br />
+discord.py <br>
+psycopg2 <br>
+requests <br>
+datetime <br>
 
 **_stay tuned :P_** <br />
