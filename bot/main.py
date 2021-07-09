@@ -38,7 +38,7 @@ async def turn_off_bot(ctx):
 extensions = [
 	'cogs.managecogs',
 	'cogs.dark',
-	'cogs.memes',
+	'cogs.memeApi',
 	'cogs.test'
 ]
 
