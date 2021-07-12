@@ -10,15 +10,16 @@ class pull_memes(commands.Cog):
 		self.AFTER = int(datetime(d.year, d.month, d.day, 0, 0, 0).timestamp())
 		self.BEFORE = self.AFTER + 3600
 		self.LINK = "https://apiv2.pushshift.io/reddit/submission/search?subreddit=memes"\
-					"&limit=20"\
+					"&limit=10"\
 					"&after={0}"\
 					"&before={1}".format(self.AFTER, self.BEFORE)
 		data = {}
 		data['memes'] = []
+		self.queue_length = 0
 		reponse = requests.get(self.LINK)
-		memes = reponse.json()
+		raw_memes = reponse.json()
 		with open('./bot/cogs/memes.json', 'w') as file:
-			for meme in memes['data']:
+			for meme in raw_memes['data']:
 				if self.validity(meme):
 					data['memes'].append({
 						'title': meme['title'],
@@ -26,20 +27,21 @@ class pull_memes(commands.Cog):
 						'permalink': meme['permalink']
 					})
 			print('len: ', len(data['memes']))
+			self.queue_length = len(data['memes'])
 			json.dump(data, file, indent = 4)
-		self.memes = self.get_meme()
+			self.memes = data
+		self.initiate_add_more_memes.start()
 
 	def update_link(self):
 		self.AFTER = self.BEFORE
 		self.BEFORE = self.BEFORE + 3600
 		self.LINK = "https://apiv2.pushshift.io/reddit/submission/search?subreddit=memes"\
-					"&limit=20"\
+					"&limit=10"\
 					"&after={0}"\
 					"&before={1}".format(self.AFTER, self.BEFORE)
 
 	def add_more_memes(self):
 		with open('./bot/cogs/memes.json', 'r+') as file:
-			data = json.load(file)
 			self.update_link()
 			memes = requests.get(self.LINK).json()
 			for meme in memes['data']:
@@ -50,13 +52,15 @@ class pull_memes(commands.Cog):
 						'permalink': meme['permalink']
 					})
 			print('len: ', len(self.memes['memes']))
+			self.queue_length = len(self.memes['memes'])
 			file.seek(0)
 			json.dump(self.memes, file, indent = 4)
 
 	def validity(self, data: dict):
-		if not 'removed_by_category' in data.keys():
+		key = 'removed_by_category'
+		if not key in data.keys():
 			return True
-		elif data['removed_by_category'] == 'reddit':
+		elif data[key] == 'reddit' or data[key] is None:
 			return True
 		return False
 
@@ -65,11 +69,6 @@ class pull_memes(commands.Cog):
 			self.memes['memes'].pop(0)
 			file.seek(0)
 			json.dump(self.memes, file, indent = 4)
-
-	def get_meme(self):
-		with open('./bot/cogs/memes.json', 'r') as file:
-			data = json.load(file)
-			return data
 	
 	@commands.command(name = 'memes')
 	async def send_memes(self, ctx):
@@ -81,9 +80,15 @@ class pull_memes(commands.Cog):
 		)
 		embed_.set_image(url = self.memes['memes'][0]['url'])
 		self.delete_meme()
-		if len(self.memes['memes']) < 2:
-			self.add_more_memes()
 		return await ctx.send(embed = embed_)
+	
+	@tasks.loop(seconds = 10.0)
+	async def initiate_add_more_memes(self):
+		if len(self.memes['memes']) <= self.queue_length/2:
+			temp = self.queue_length
+			self.add_more_memes()
+			temp -= len(self.memes['memes'])
+			print('[+] Got memes {0}'.format(temp))
 
 def setup(bot):
 	bot.add_cog(pull_memes(bot))
