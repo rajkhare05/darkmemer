@@ -7,36 +7,38 @@ import json
 class pull_memes(commands.Cog):
 	def __init__(self, bot):
 		d = datetime.now()
-		self.AFTER = int(datetime(d.year, d.month, d.day, 0, 0, 0).timestamp())
+		self.AFTER = int(datetime(d.year, d.month, d.day, 0, 0, 0).timestamp()) - 1
 		self.BEFORE = self.AFTER + 3600
 		self.LINK = "https://apiv2.pushshift.io/reddit/submission/search?subreddit=memes"\
-					"&limit=10"\
+					"&limit=100"\
 					"&after={0}"\
 					"&before={1}".format(self.AFTER, self.BEFORE)
-		data = {}
-		data['memes'] = []
+		self.memes = {}
+		self.memes['memes'] = []
+		self.memes['last_time'] = 0
 		self.queue_length = 0
 		reponse = requests.get(self.LINK)
 		raw_memes = reponse.json()
 		with open('./bot/cogs/memes.json', 'w') as file:
 			for meme in raw_memes['data']:
 				if self.validity(meme):
-					data['memes'].append({
+					self.memes['memes'].append({
 						'title': meme['title'],
 						'url': meme['url'],
 						'permalink': meme['permalink']
 					})
-			print('len: ', len(data['memes']))
-			self.queue_length = len(data['memes'])
-			json.dump(data, file, indent = 4)
-			self.memes = data
+			self.memes['last_time'] = meme['retrieved_on']
+			self.queue_length = len(self.memes['memes'])
+			json.dump(self.memes, file, indent = 4)
 		self.initiate_add_more_memes.start()
 
 	def update_link(self):
-		self.AFTER = self.BEFORE
-		self.BEFORE = self.BEFORE + 3600
+		self.AFTER = self.memes['last_time']
+		if self.AFTER >= self.BEFORE:
+			self.BEFORE = self.AFTER + 3600
+
 		self.LINK = "https://apiv2.pushshift.io/reddit/submission/search?subreddit=memes"\
-					"&limit=10"\
+					"&limit=100"\
 					"&after={0}"\
 					"&before={1}".format(self.AFTER, self.BEFORE)
 
@@ -51,7 +53,7 @@ class pull_memes(commands.Cog):
 						'url': meme['url'],
 						'permalink': meme['permalink']
 					})
-			print('len: ', len(self.memes['memes']))
+			self.memes['last_time'] = meme['retrieved_on']
 			self.queue_length = len(self.memes['memes'])
 			file.seek(0)
 			json.dump(self.memes, file, indent = 4)
@@ -70,9 +72,8 @@ class pull_memes(commands.Cog):
 			file.seek(0)
 			json.dump(self.memes, file, indent = 4)
 	
-	@commands.command(name = 'memes')
+	@commands.command(name = 'meme')
 	async def send_memes(self, ctx):
-		print(self.memes['memes'][0]['title'])
 		embed_ = discord.Embed(
 			title = self.memes['memes'][0]['title'],
 			colour = discord.Colour.red(),
@@ -88,7 +89,6 @@ class pull_memes(commands.Cog):
 			temp = self.queue_length
 			self.add_more_memes()
 			temp -= len(self.memes['memes'])
-			print('[+] Got memes {0}'.format(temp))
 
 def setup(bot):
 	bot.add_cog(pull_memes(bot))
